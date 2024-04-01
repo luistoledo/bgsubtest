@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<group>
+	<far_clipping>170</far_clipping>
+	<near_clipping>11</near_clipping>
+	<mask_threshold>1</mask_threshold>
+	<mask_blur>59</mask_blur>
+	<final_gaussian_blur>59</final_gaussian_blur>
+</group>

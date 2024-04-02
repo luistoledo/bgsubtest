@@ -51,8 +51,8 @@ void ofApp::update(){
     // absdiff frame - background
     stepn[2] = "absdiff bg - frame";
     steps[2] = steps[0];
-    steps[2] -= steps[1];
-    //cvAbsDiff(steps[1].getCvImage(), steps[0].getCvImage(), steps[2].getCvImage());
+    cvAbsDiff(steps[1].getCvImage(), steps[0].getCvImage(), steps[2].getCvImage());
+    //steps[2] -= steps[1];
 
     // create mask
     stepn[3] = "create mask\nabsdiff threshold";
@@ -100,10 +100,12 @@ void ofApp::draw(){
 
     for (int i = 0; i < 10; i++) {
         steps[i].draw(IMG_WIDTH_4 * i, IMG_HEIGHT_4 + 40, IMG_WIDTH_4, IMG_HEIGHT_4);
-        ofDrawBitmapString(ofToString(i) + "\n" + stepn[i], IMG_WIDTH_4 * i, (IMG_HEIGHT_2 + 40) + 20);
+        ofDrawBitmapString(ofToString(i) + "\n" + stepn[i], IMG_WIDTH_4 * i, (IMG_HEIGHT_2 + 40) + 10);
     }
     steps[zoomed].draw(0, IMG_HEIGHT_2 + 80, IMG_WIDTH, IMG_HEIGHT);
     ofDrawBitmapString("zooming " + ofToString(zoomed) + "\n" + stepn[zoomed], 0, IMG_HEIGHT + IMG_HEIGHT_2 + 10);
+
+    //thresholdLow = (int) ofRandom(0, 100);
 
     gui.draw();
 }

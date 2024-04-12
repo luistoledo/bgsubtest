@@ -20,6 +20,7 @@ class ofApp : public ofBaseApp{
 		ofxCvGrayscaleImage frame;		
 		int zoomed;
 		vector<ofxCvGrayscaleImage> steps;
+		ofxCvGrayscaleImage zoomedImage;
 		vector<string> stepn;
 
 		ofxCvContourFinder contourFinder;
@@ -45,4 +46,9 @@ class ofApp : public ofBaseApp{
 		ofParameter<int> maxArea;
 		ofParameter<int> gaussianBlur;
 		ofParameter<int> maskBlur;
+
+		ofColor colorPicker;
+		//stringstream colorString;
+		//unsigned char[3] pixel;
+
 };

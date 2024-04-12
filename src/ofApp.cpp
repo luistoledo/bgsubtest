@@ -18,6 +18,9 @@ void ofApp::setup(){
     ofLoadImage(pixels, "frame.png");
     frame.allocate(pixels.getWidth(), pixels.getHeight());
     frame.setFromPixels(pixels);
+
+    zoomedImage.allocate(pixels.getWidth(), pixels.getHeight());
+    zoomedImage.clear();
     
     pixels.clear();
     pixels.allocate(IMG_WIDTH, IMG_HEIGHT, OF_IMAGE_GRAYSCALE);
@@ -31,7 +34,7 @@ void ofApp::setup(){
     }
 
     gui.setup();
-    gui.add(thresholdLow.set("far clipping", 30, 0, 255));
+    gui.add(thresholdLow.set("far clipping", 150, 0, 255));
     gui.add(maskThreshold.set("mask threshold", 1, 0, 255));
     gui.add(maskBlur.set("mask blur", 11, 0, 255));
     gui.add(gaussianBlur.set("final gaussian blur", 11, 0, 255));
@@ -87,6 +90,9 @@ void ofApp::update(){
     for (int i = 0; i < 10; i++) {
         steps[i].flagImageChanged();
     }
+
+    glReadPixels(mouseX, ofGetHeight() - mouseY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &colorPicker);
+    //ofLog() << ofToString(colorPicker);
 }
 
 //--------------------------------------------------------------
@@ -102,8 +108,12 @@ void ofApp::draw(){
         steps[i].draw(IMG_WIDTH_4 * i, IMG_HEIGHT_4 + 40, IMG_WIDTH_4, IMG_HEIGHT_4);
         ofDrawBitmapString(ofToString(i) + "\n" + stepn[i], IMG_WIDTH_4 * i, (IMG_HEIGHT_2 + 40) + 10);
     }
-    steps[zoomed].draw(0, IMG_HEIGHT_2 + 80, IMG_WIDTH, IMG_HEIGHT);
+    zoomedImage.draw(0, IMG_HEIGHT_2 + 80, IMG_WIDTH, IMG_HEIGHT);
     ofDrawBitmapString("zooming " + ofToString(zoomed) + "\n" + stepn[zoomed], 0, IMG_HEIGHT + IMG_HEIGHT_2 + 10);
+
+    stringstream colorString;
+    colorString << "Color under mouse: \n" << ofToString(colorPicker);
+    ofDrawBitmapString(colorString.str(), IMG_WIDTH, 20);
 
     //thresholdLow = (int) ofRandom(0, 100);
 
@@ -125,7 +135,12 @@ void ofApp::mousePressed(int x, int y, int button) {
     if ((y > IMG_HEIGHT_4 + 40) && (y < IMG_HEIGHT_2 + 40)) {
         i = clamp(i, 0, 9);
         zoomed = i;
+        zoomedImage = steps[i];
         ofLog() << "zooming step " + ofToString(zoomed);
+    }
+    else if ((y < IMG_HEIGHT_4)) {
+        if (x < IMG_WIDTH_4) zoomedImage = background;
+        else if (x < IMG_WIDTH_4*2) zoomedImage = frame;
     }
 }
 

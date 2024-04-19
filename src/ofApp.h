@@ -20,7 +20,7 @@ class ofApp : public ofBaseApp{
 		ofxCvGrayscaleImage frame;		
 		int zoomed;
 		vector<ofxCvGrayscaleImage> steps;
-		ofxCvGrayscaleImage zoomedImage;
+		ofxCvGrayscaleImage* zoomedImage;
 		vector<string> stepn;
 
 		ofxCvContourFinder contourFinder;

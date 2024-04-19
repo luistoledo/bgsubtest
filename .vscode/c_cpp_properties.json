@@ -104,7 +104,10 @@
                 "/usr/include/cairo",
                 "/usr/include/gstreamer-1.0",
                 "/usr/include/glib-2.0",
-                "${workspaceRoot}"
+                "${workspaceRoot}",
+                "/home/luis/workspace/repos/openFrameworks/addons/ofxOpenCv/src",
+                "/home/luis/workspace/repos/openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv4",
+                "/home/luis/workspace/repos/openFrameworks/addons/ofxGui/src"
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
@@ -164,7 +167,7 @@
                 "path": [
                     "${workspaceRoot}/../../../libs",
                     "${workspaceRoot}/../../../addons",
-                    "${workspaceRoot}/../../../libs/openFrameworks"    
+                    "${workspaceRoot}/../../../libs/openFrameworks"
                 ]
             },
             "intelliSenseMode": "clang-x64",

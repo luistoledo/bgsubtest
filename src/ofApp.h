@@ -46,9 +46,15 @@ class ofApp : public ofBaseApp{
 		ofParameter<int> maxArea;
 		ofParameter<int> gaussianBlur;
 		ofParameter<int> maskBlur;
+		ofParameter<bool> showNormal;
 
 		ofColor colorPicker;
 		//stringstream colorString;
 		//unsigned char[3] pixel;
+
+	    CvConnectedComp *comp;
+    	ofxCvGrayscaleImage mask;
+
+		ofShader shader;
 
 };

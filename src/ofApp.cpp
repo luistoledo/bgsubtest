@@ -42,7 +42,11 @@ void ofApp::setup(){
     gui.add(maskThreshold.set("mask threshold", 1, 0, 255));
     gui.add(maskBlur.set("mask blur", 11, 0, 255));
     gui.add(gaussianBlur.set("final gaussian blur", 11, 0, 255));
+    gui.add(showNormal.set("show normalmap", false));
     gui.setPosition(IMG_WIDTH_2, 10);
+
+    shader.load("normal");
+    
 }
 
 //--------------------------------------------------------------
@@ -65,52 +69,40 @@ void ofApp::update(){
     //steps[2] -= steps[1];
 
     // create mask
-    stepn[3] = "absdiff threshold";
+    stepn[3] = "b/w (threshold)";
     steps[3] = steps[2];
     steps[3].threshold(maskThreshold);
 
-    // erode mask
-    stepn[4] = "erode\n(ODR1)";
-    steps[4] = steps[3];
-    steps[4].erode();
 
     // floorfill holes
-    stepn[5] = "floodfill holes\n(ODR2)";
-    steps[5] = steps[4];
-    
-    CvConnectedComp *comp;
-    ofxCvGrayscaleImage mask;
-
-    mask.allocate(steps[5].getWidth()+2, steps[5].getHeight()+2);
+    stepn[4] = "floodfill holes";
+    steps[4] = steps[3];    
+    mask.allocate(steps[4].getWidth()+2, steps[4].getHeight()+2);
     mask.clear();
 
-    cvFloodFill(steps[5].getCvImage(), cvPoint(0,0), cvScalar(255), cvScalar(0),cvScalarAll(0), comp CV_DEFAULT(NULL), CV_FLOODFILL_FIXED_RANGE, mask.getCvImage());
-    steps[5].invert();
-    cvOr(steps[4].getCvImage() , steps[5].getCvImage(), steps[5].getCvImage());
+    // extract holes
+    stepn[7] = "*holes";
+    cvFloodFill(steps[4].getCvImage(), cvPoint(0,0), cvScalar(255), cvScalar(0),cvScalarAll(0), comp CV_DEFAULT(NULL), CV_FLOODFILL_FIXED_RANGE, mask.getCvImage());
+    steps[4].invert();
+    steps[7] = steps[4];
 
-    // steps[5].dilate();
-    // ofxCvGrayscaleImage inv;
-    // inv.allocate(steps[5].getWidth(), steps[5].getHeight());
-    // inv.invert();
-    
-    // cvFloodFill( steps[5].getCvImage(), cvPoint(IMG_WIDTH_2, IMG_HEIGHT_2), cvScalar(125), cvScalar(250), cvScalar(250));
-    // steps[5].dilate();
-    // steps[5].blurGaussian(maskBlur);
+    // merge inversed holes
+    cvOr(steps[3].getCvImage(), steps[4].getCvImage(), steps[4].getCvImage());
 
-    // mask the frame
-    stepn[6] = "mask\nODR1 * frame";
-    steps[6] = steps[0];
-    steps[6] *= steps[4];
+    // erode mask
+    stepn[5] = "erode\nremove noise";
+    steps[5] = steps[4];
+    steps[5].erode();
 
-    // gaussian the result
-    stepn[7] = "blur ODR4";
-    steps[7] = steps[6];
-    steps[7].blurGaussian(maskBlur);
+    // gaussianblur
+    stepn[6] = "blur";
+    steps[6] = steps[5];
+    steps[6].blurGaussian(gaussianBlur);
 
-    stepn[8] = "blur ODR5";
-    steps[8] = steps[5];
-    steps[8].blurGaussian(gaussianBlur);
-
+    // // mask the frame
+    // stepn[7] = "mask\nODR1 * frame";
+    // steps[7] = steps[0];
+    // steps[7] *= steps[4];
     
     // stepn[8] = "contours";
     // getPolyContour(5, 8);
@@ -144,6 +136,14 @@ void ofApp::draw(){
     stringstream colorString;
     colorString << "Color under mouse: \n" << ofToString(colorPicker);
     ofDrawBitmapString(colorString.str(), IMG_WIDTH, 20);
+
+    if (showNormal) {
+        steps[6].getTextureReference().bind();
+        shader.begin();
+        steps[6].draw(IMG_WIDTH, IMG_HEIGHT_2+80, IMG_WIDTH, IMG_HEIGHT);
+        shader.end();
+        steps[6].getTextureReference().unbind();
+    }
 
     //thresholdLow = (int) ofRandom(0, 100);
 

@@ -74,7 +74,8 @@ void ofApp::update(){
     steps[3].threshold(maskThreshold);
 
 
-    // floorfill holes
+    // remove holes (floorfill)
+    // preparation
     stepn[4] = "floodfill holes";
     steps[4] = steps[3];    
     mask.allocate(steps[4].getWidth()+2, steps[4].getHeight()+2);
@@ -82,11 +83,11 @@ void ofApp::update(){
 
     // extract holes
     stepn[7] = "*holes";
-    cvFloodFill(steps[4].getCvImage(), cvPoint(0,0), cvScalar(255), cvScalar(0),cvScalarAll(0), comp CV_DEFAULT(NULL), CV_FLOODFILL_FIXED_RANGE, mask.getCvImage());
+    cvFloodFill(steps[4].getCvImage(), cvPoint(0,0), cvScalar(255), cvScalar(0), cvScalarAll(0), comp CV_DEFAULT(NULL), CV_FLOODFILL_FIXED_RANGE, mask.getCvImage());
     steps[4].invert();
-    steps[7] = steps[4];
+    steps[7] = steps[4]; // for debugging only
 
-    // merge inversed holes
+    // merge inversed holes with original
     cvOr(steps[3].getCvImage(), steps[4].getCvImage(), steps[4].getCvImage());
 
     // erode mask
@@ -98,6 +99,11 @@ void ofApp::update(){
     stepn[6] = "blur";
     steps[6] = steps[5];
     steps[6].blurGaussian(gaussianBlur);
+
+    // try 
+    // normalmap with sobel
+    // https://gamedev.stackexchange.com/questions/165575/calculating-normal-map-from-height-map-using-sobel-operator
+    // https://docs.opencv.org/4.x/d5/d0f/tutorial_py_gradients.html
 
     // // mask the frame
     // stepn[7] = "mask\nODR1 * frame";
